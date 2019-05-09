@@ -2,7 +2,7 @@
 import cv2
 import numpy as np
 # Read image
-img = cv2.imread("dados.jpg", cv2.IMREAD_COLOR)
+img = cv2.imread("data/dado/dados.jpg", cv2.IMREAD_COLOR)
 
 gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 

@@ -19,7 +19,7 @@ def write_dots(frame, gray_image, x, y, w, h):
     return frame
 
 
-cap = cv2.VideoCapture('dados_2.mp4')
+cap = cv2.VideoCapture('data/dado/dados_2.mp4')
 detector = cv2.SimpleBlobDetector_create()
 font = cv2.FONT_HERSHEY_SIMPLEX
 font_scale = 0.8
