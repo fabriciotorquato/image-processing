@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-img = cv2.imread('data/sudoku/sudoku7.jpg', cv2.IMREAD_GRAYSCALE)
+img = cv2.imread('data/sudoku/sudoku8.jpg', cv2.IMREAD_GRAYSCALE)
 
 kernelSize = (5, 5)
 
@@ -19,16 +19,17 @@ cv2.floodFill(im_floodfill_inv, mask, (0, 0),110)
 
 _, thresh = cv2.threshold(im_floodfill_inv, 127, 255, cv2.THRESH_BINARY)
 
-contours, _ = cv2.findContours(
+_, contours, _ = cv2.findContours(
     thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
+sum = 0
+for a in range(len(contours)):
+    sum+=cv2.contourArea(contours[a])
+lim = sum/(len(contours)*3.5)
 
-#   Na imagem 8 usar limite = 15
-#   Nos outros usar 40
-lim = 40
 
 for contour in contours:
-
+    
     area = cv2.contourArea(contour)
 
     if area >= lim:
