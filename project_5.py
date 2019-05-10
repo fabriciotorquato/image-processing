@@ -1,57 +1,41 @@
 import cv2
 import numpy as np
-from matplotlib import pyplot as plt
 
+img = cv2.imread('data/sudoku/sudoku7.jpg', cv2.IMREAD_GRAYSCALE)
 
-img = cv2.imread('data/sudoku/sudoku1.jpg', cv2.IMREAD_GRAYSCALE)
+kernelSize = (5, 5)
 
-tresholdMin = 30
-tresholdMax = 60
+_, thresh = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
+thresh = cv2.erode(thresh, kernelSize, iterations=5)
 
-kernelSize = (3, 3)
+rows, cols = thresh.shape
+mask = np.zeros((rows+2, cols+2), np.uint8)
+cv2.floodFill(thresh, mask, (0, 0),0)
 
-# filtro = cv2.GaussianBlur(img,kernelSize,0)
-_, thresh = cv2.threshold(img, 247, 247, cv2.THRESH_BINARY_INV)
-canny = cv2.erode(thresh, kernelSize, iterations=1)
+im_floodfill_inv = cv2.bitwise_not(thresh)
+rows, cols = im_floodfill_inv.shape
+mask = np.zeros((rows+2, cols+2), np.uint8)
+cv2.floodFill(im_floodfill_inv, mask, (0, 0),110)
 
-# edges = cv2.erode(edges, kernelSize, iterations=1)
+_, thresh = cv2.threshold(im_floodfill_inv, 127, 255, cv2.THRESH_BINARY)
 
-sobel = cv2.Sobel(img, cv2.CV_8U, 1, 0, ksize=3)
-sobel = cv2.erode(sobel, kernelSize, iterations=1)
-
-# sobel = sobel - canny
-# sobel = cv2.Sobel(sobel,cv2.CV_8U,0,1,ksize=3)
-
-
-# get contours
 contours, _ = cv2.findContours(
-    sobel, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-areas = []
-for contour in contours:
-    area = cv2.contourArea(contour)
-    if area > 0 :
-        areas.append(area)
 
-areas = np.asarray(areas)
-min = np.mean(areas)
-print(np.mean(areas))
+#   Na imagem 8 usar limite = 15
+#   Nos outros usar 40
+lim = 40
 
 for contour in contours:
 
     area = cv2.contourArea(contour)
-   
-    if area >= 80 and area <= 300:
-        print(area)
-        rect = cv2.minAreaRect(contour)
-        box = cv2.boxPoints(rect)
-        box = np.int0(box)
-        cv2.polylines(img, [box],  True,  (0, 123, 123),  3)
 
+    if area >= lim:
+        x,y,w,h = cv2.boundingRect(contour)
+        cv2.rectangle(img,(x-5,y-5),(x+w+5,y+h+5),(127,127,128),2)
 
-cv2.imshow('A',  canny)
-cv2.imshow('B',  sobel)
-cv2.imshow('C',  img)
+cv2.imshow('Z',  img)
 
 cv2.waitKey()
 
